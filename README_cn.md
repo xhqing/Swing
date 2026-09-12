@@ -76,3 +76,10 @@ python3 analyze.py yearly       # 按年分解
 ## 免责声明
 
 本仓库仅供研究学习。**全部内容不构成投资建议**；回测结果不代表实盘与未来表现；据此交易的风险由使用者自行承担。
+
+## 版权与署名
+
+本项目基于 [MIT 许可证](LICENSE.md) 开源。
+
+- 版权所有 (c) 2026 All Contributors
+- 引用 / 使用本仓库时请保留版权声明并注明来源：[https://github.com/xhqing/Swing](https://github.com/xhqing/Swing)

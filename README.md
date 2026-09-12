@@ -76,3 +76,10 @@ python3 analyze.py yearly       # year-by-year breakdown
 ## Disclaimer
 
 This repository is for research and educational purposes. **Nothing here is investment advice.** Backtest results do not guarantee live or future performance. Trade at your own risk.
+
+## License & Attribution
+
+This project is licensed under the [MIT License](LICENSE.md).
+
+- Copyright (c) 2026 All Contributors
+- If you use or reference this repository, please retain the copyright notice and credit the source: [https://github.com/xhqing/Swing](https://github.com/xhqing/Swing)
