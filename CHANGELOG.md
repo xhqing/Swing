@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.0] - 2026-09-19
 
 ### 变更（体系叙事同步：删去 Victor / DayTradingAgent 关联表述，量化策略独立开发）
 
