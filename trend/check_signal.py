@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """检测信号 CLI：每天收盘后判断哪些标的触发日 K 趋势跟随做多信号。
 
-用法（在 swing/ 目录下）：
+用法（在 trend/ 目录下）：
   # 检测全部 37 只标的（默认，每天美股收盘后跑）
   python3 check_signal.py
 

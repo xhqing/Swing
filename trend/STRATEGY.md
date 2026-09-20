@@ -142,7 +142,7 @@ $$SL = \max(SL_0,\; \text{持仓最高价} - 3 \times ATR_{14})$$
 
 ## 9. 运行方式（CLI 工具）
 
-**环境**：需要富途 OpenD 运行（数据源）+ Python 3 + pandas。所有命令在 `swing/` 目录下运行。
+**环境**：需要富途 OpenD 运行（数据源）+ Python 3 + pandas。所有命令在 `trend/` 目录下运行。
 
 ```bash
 # ① 拉取/更新日 K 数据（首次 + 每日收盘后）
@@ -150,7 +150,7 @@ cd engine
 python3 data.py fetch-all --ktype DAY
 
 # ② 检测全部 37 只标的今日信号（每天美股收盘后跑）
-cd swing
+cd trend
 python3 check_signal.py
 
 # ③ 单个标的（详细模式显示距离触发差多少）

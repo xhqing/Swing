@@ -16,7 +16,7 @@
 
 **Swing** 是一套文档完整、经过回测验证的**日 K 趋势跟随策略**（美股大盘股），由 [Markowitz](https://github.com/xhqing/QuantStrategistAgent)（[xhqing AI agent 团队](https://github.com/xhqing)的量化策略师 agent）开发。
 
-> **这不是黑箱。** 策略完整逻辑、参数、验证方法、诚实的局限标注、已证伪方案清单全部公开——见 [`swing/STRATEGY.md`](swing/STRATEGY.md)。趋势跟随本身是公开方法学（Donchian 突破 / 海龟交易法体系）；本仓库的价值在于**用 20 年数据对这套公开方法学做了严格验证**。
+> **这不是黑箱。** 策略完整逻辑、参数、验证方法、诚实的局限标注、已证伪方案清单全部公开——见 [`trend/STRATEGY.md`](trend/STRATEGY.md)。趋势跟随本身是公开方法学（Donchian 突破 / 海龟交易法体系）；本仓库的价值在于**用 20 年数据对这套公开方法学做了严格验证**。
 
 ---
 
@@ -43,6 +43,10 @@
 
 诚实标注（完整清单见 STRATEGY.md §11）：月胜率只有 54%——约一半月份小亏小赚；约 1/3 年份在震荡 / 危机行情亏钱；最差单笔为隔夜跳空 −5.58R。**这是「经常小亏、偶尔大赚」的系统，仓位纪律（§8）正是为那条尾部设计的。**
 
+## 候选策略：A 股 ETF 动量轮动
+
+主策略之外，本仓库另记录一套**候选级** A 股 ETF 动量轮动策略（35 只多类别池）：22 日加权对数回归动量得分 × R²，前 3 名等权持有，每 5 个交易日调仓 + 排名缓冲带。回测 2013-2026（腾讯日 K、真实成本）：净年化 19.8%、夏普 0.81、最大回撤 −30%——但 walk-forward 与参数检验显示含过拟合成分，诚实预期为**年化 12~16%**。完整口径、证据链与使用边界见 [`rotation/ROTATION.md`](rotation/ROTATION.md)。
+
 ## 快速开始
 
 需要 Python 3 + pandas（拉数据需富途 OpenD 在线）。
@@ -52,7 +56,7 @@
 cd engine && python3 data.py fetch-all --ktype DAY
 
 # 2. 检测全部 37 只标的今日信号（每天美股收盘后跑）
-cd ../swing && python3 check_signal.py
+cd ../trend && python3 check_signal.py
 
 # 3. 完整回测（推荐方案 1）
 python3 backtest.py --scheme 1
@@ -62,14 +66,20 @@ python3 backtest.py --all       # 对比全部 4 个方案
 python3 analyze.py monthly      # 月收益率分布
 python3 analyze.py hold         # 持仓时间分布
 python3 analyze.py yearly       # 按年分解
+
+# 5. 轮动策略信号（候选级；每 5 个交易日 A 股收盘后跑）
+cd ../rotation && python3 rotation.py fetch-pool && python3 rotation.py signals
 ```
 
 ## 目录结构
 
 ```
-├── swing/            # CLI 层：check_signal / backtest / analyze + STRATEGY.md（完整文档）
-│   └── STRATEGY.md   # ★ 策略完整文档——从这里读起
-├── engine/           # 数据层（data.py）+ 回测引擎 + 3 套策略实现
+├── trend/            # 主策略（趋势跟随）：check_signal / backtest / analyze + 完整文档
+│   └── STRATEGY.md   # ★ 主策略完整文档——从这里读起
+├── rotation/         # 候选策略：A 股 ETF 动量轮动
+│   ├── ROTATION.md   # 轮动策略完整文档
+│   └── rotation.py   # 轮动回测器 + 信号 CLI（共享 engine/ 数据层）
+├── engine/           # 共享数据层（data.py：富途 + 腾讯源）+ 回测引擎 + 策略实现
 └── assets/
 ```
 

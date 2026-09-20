@@ -1,4 +1,4 @@
-# swing — 日 K 趋势跟随策略工具
+# trend — 日 K 趋势跟随策略工具
 
 > 量化策略（Markowitz 开发）的用户 CLI 工具。**日 K 波段趋势跟随**，经 20 年 × 37 只美股历史验证（四重泛化测试全过）。策略完整文字版见 [STRATEGY.md](STRATEGY.md)。
 
@@ -9,7 +9,7 @@
 cd engine && python3 data.py fetch-all --ktype DAY
 
 # 2. 每天美股收盘后，检测全部标的信号
-cd swing && python3 check_signal.py
+cd trend && python3 check_signal.py
 
 # 有 ✅ 触发信号 → 次日开盘买入（仓位/止损/trailing 见 STRATEGY.md）
 ```
@@ -36,7 +36,7 @@ cd swing && python3 check_signal.py
 ## 目录结构
 
 ```
-swing/
+trend/
 ├── README.md        # 本文件（项目说明）
 ├── STRATEGY.md      # 策略完整文字版（信号/执行/止损/trailing/仓位/历史表现/已证伪方案/局限）
 ├── common.py        # 共享：标的池/参数/数据加载（三个 CLI 共用的唯一接缝）

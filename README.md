@@ -16,7 +16,7 @@
 
 **Swing** is a fully documented, backtest-validated **daily-K trend-following strategy** for US large-cap equities, developed by [Markowitz](https://github.com/xhqing/QuantStrategistAgent) (the quant-strategist agent of the [xhqing AI agent team](https://github.com/xhqing)).
 
-> **This is not a black box.** The complete strategy logic, parameters, validation methodology, honest limitations, and a list of falsified alternatives are all in the open — see [`swing/STRATEGY.md`](swing/STRATEGY.md). Trend-following is public knowledge (Donchian breakout / turtle trading); what this repo adds is **rigorous validation of that public knowledge on 20 years of data**.
+> **This is not a black box.** The complete strategy logic, parameters, validation methodology, honest limitations, and a list of falsified alternatives are all in the open — see [`trend/STRATEGY.md`](trend/STRATEGY.md). Trend-following is public knowledge (Donchian breakout / turtle trading); what this repo adds is **rigorous validation of that public knowledge on 20 years of data**.
 
 ---
 
@@ -43,6 +43,10 @@ Classic Donchian breakout + volume confirmation + ATR trailing — i.e., time-se
 
 Honest caveats (full list in STRATEGY.md §11): monthly win rate is only 54% — roughly half of all months are flat-to-negative; ~1/3 of years lose money in choppy/crisis regimes; the worst single trade is −5.58R on an overnight gap. **This is a "lose small often, win big occasionally" system, and the position-sizing rules (§8) exist precisely because of that tail.**
 
+## Candidate Strategy: A-Share ETF Momentum Rotation
+
+Alongside the main strategy, this repo documents a **candidate-grade** ETF momentum-rotation strategy for Chinese A-share ETFs (35-fund multi-category pool): 22-day weighted log-regression momentum score × R², top-3 equal-weight holdings, rebalanced every 5 trading days with a rank buffer. Backtest 2013–2026 (Tencent daily-K, real costs): net CAGR 19.8%, Sharpe 0.81, max drawdown −30% — though walk-forward and parameter tests reveal overfitting components, so the honest expectation is **12–16%/yr**. Full spec, evidence chain, and usage boundaries: [`rotation/ROTATION.md`](rotation/ROTATION.md).
+
 ## Quick Start
 
 Requires Python 3 + pandas (+ Futu OpenD for data fetching).
@@ -52,7 +56,7 @@ Requires Python 3 + pandas (+ Futu OpenD for data fetching).
 cd engine && python3 data.py fetch-all --ktype DAY
 
 # 2. Check today's signals for all 37 symbols (run after US close daily)
-cd ../swing && python3 check_signal.py
+cd ../trend && python3 check_signal.py
 
 # 3. Full backtest (recommended scheme 1)
 python3 backtest.py --scheme 1
@@ -62,14 +66,20 @@ python3 backtest.py --all       # compare all 4 schemes
 python3 analyze.py monthly      # monthly return distribution
 python3 analyze.py hold         # holding-period distribution
 python3 analyze.py yearly       # year-by-year breakdown
+
+# 5. ETF rotation signals (candidate strategy; run after A-share close every ~5 trading days)
+cd ../rotation && python3 rotation.py fetch-pool && python3 rotation.py signals
 ```
 
 ## Repository Layout
 
 ```
-├── swing/            # CLI layer: check_signal / backtest / analyze + STRATEGY.md (full docs)
-│   └── STRATEGY.md   # ★ Complete strategy documentation — start here
-├── engine/           # Data layer (data.py) + backtest engine + 3 strategy implementations
+├── trend/            # Main strategy (trend-following): check_signal / backtest / analyze + full docs
+│   └── STRATEGY.md   # ★ Complete main-strategy documentation — start here
+├── rotation/         # Candidate strategy: A-share ETF momentum rotation
+│   ├── ROTATION.md   # Complete rotation strategy documentation
+│   └── rotation.py   # Rotation backtester + signal CLI (shares engine/ data layer)
+├── engine/           # Shared data layer (data.py: Futu + Tencent sources) + backtest engine + strategies
 └── assets/
 ```
 

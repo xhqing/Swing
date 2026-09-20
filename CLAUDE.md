@@ -1,6 +1,6 @@
 # Swing — 项目说明
 
-日 K 趋势跟随策略工具集（美股大盘股，Python）：完整文档化的策略逻辑与参数（`swing/STRATEGY.md`）、20 年 × 37 只标的的回测验证、可信度标定与已证伪方案清单；`engine/` 为回测引擎。由 Markowitz 开发维护。
+日 K 趋势跟随策略工具集（美股大盘股，Python）：完整文档化的策略逻辑与参数（`trend/STRATEGY.md`）、20 年 × 37 只标的的回测验证、可信度标定与已证伪方案清单；另含候选级 A 股 ETF 动量轮动策略（`rotation/ROTATION.md`，候选级、诚实预期年化 12~16%）。`engine/` 为共享数据层与回测引擎（两策略各在独立目录，不混放）。由 Markowitz 开发维护。
 
 > 本项目是 **QuantStrategistAgent（Markowitz）的子项目**。以下为 QuantStrategistAgent（Markowitz）项目根 CLAUDE.md 全文，其中「本项目」均指 QuantStrategistAgent；Swing 自身的项目说明以上方内容为准（`.claude/` 超集关系：QuantStrategistAgent 为权威源、Swing 为其超集，2026-08-10 全局规则）。
 

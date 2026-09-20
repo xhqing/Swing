@@ -3,12 +3,15 @@
 
 数据源：
 - 富途 OpenD（futu-api，127.0.0.1:11111）为主力：分钟 K（1m/5m/15m，约 5.5 年，2021-01-21 起）
-  + 日 K（约 20 年）；符号前缀格式 `HK.02800` / `US.SPY`。
+  + 港美股日 K（约 20 年）；符号前缀格式 `HK.02800` / `US.SPY`。
+- 腾讯财经日 K（A 股 SH/SZ 专用，免 OpenD）：前复权 qfq，历史回溯到上市日，
+  单次 800 根分页拉全量；符号前缀格式 `SH.513100` / `SZ.159915`。
 - 长桥 CLI 日 K（后缀格式 `02800.HK`）作交叉验证：接口脚本 /tmp/lb.sh 为本机临时脚本，
   非项目资产，MVP 不依赖；后续有需要再接入（数据源调研见 data-sources.md）。
 
 用法：
   python3 data.py fetch HK.02800               # 拉单标的全量（含增量）落 parquet 缓存
+  python3 data.py fetch SH.513100              # A 股日 K 走腾讯财经（免 OpenD，全量重拉）
   python3 data.py fetch-all                    # 拉股票池全量
   python3 data.py snapshot [--upload]          # 打包快照 + manifest；--upload 上传 GitHub Release
   python3 data.py restore snapshot-2026-08-03  # 从 Release 下载校验解压回 data_cache/
@@ -53,6 +56,14 @@ FUTU_PORT = 11111
 MAX_COUNT = 100_000        # 富途单次 request_history_kline 上限（实测 10 万根）
 REQUEST_TIMEOUT = 60       # 单次请求硬超时（秒），防 OpenD 挂起
 HIST_LOWER_BOUND = "2020-01-01 00:00:00"   # 全量拉取起点：早于所有历史下限，富途从最早可给处返回
+
+# 腾讯财经日 K（A 股 SH/SZ 专用）：fqkline 接口，免费无 key
+TENCENT_HOSTS = ["proxy.finance.qq.com", "web.ifzq.gtimg.cn"]  # 主域名优先，失败自动切换
+# （2026-09-19 实测备用域名返回 code=11 "No dispatch info found" 失效，保留切换逻辑待其恢复）
+TENCENT_PATH = "/ifzqgtimg/appstock/app/fqkline/get"
+TENCENT_MAX_COUNT = 800    # 单次根数上限（2026-09-19 实测：count<=800 按请求精确返回，>800 被钳到 640）
+TENCENT_TIMEOUT = 20       # 单次请求硬超时（秒）
+TENCENT_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
 
 # 周期 → (富途 KLType, 分钟步长) ；步长用于增量更新计算拉取起点
 KTYPES = {
@@ -292,6 +303,98 @@ def fetch_symbol(ctx, symbol: str, ktypes: list[str] | None = None, force: bool 
     return wrote
 
 
+# ---------------------------------------------------------------- 拉取（腾讯财经日 K，A 股 SH/SZ 专用）
+
+def _tencent_code(symbol: str) -> str:
+    """富途前缀格式 → 腾讯代码：`SH.513100` → `sh513100`（小写市场前缀 + 6 位代码）。"""
+    market, code = symbol_normalize(symbol).split(".")
+    if market not in ("SH", "SZ"):
+        raise DataError(f"腾讯源仅支持 A 股（SH/SZ）：{symbol}")
+    return f"{market.lower()}{code}"
+
+
+def _tencent_request(code: str, start: str | None, end: str | None,
+                     count: int = TENCENT_MAX_COUNT) -> tuple[list[list], str]:
+    """单次请求腾讯前复权日 K，返回 (原始行数组, 标的名称)。
+
+    GET param=code,day,start,end,count,qfq；start/end 为 'YYYY-MM-DD'（含端点），空 = 不设界。
+    返回行格式 [日期, 开, 收, 高, 低, 量]——**第 2/3 列是收/高，非 OHLC 顺序**，解析须对号入座。
+    复权数据 key：qfq → `qfqday`，不复权 → `day`，两者都查。量单位为「手」（新浪等源为「股」，
+    相差 100 倍；本仓库 volume 只用于同标的内相对值（量比 / VWAP 加权），绝对单位不影响计算）。
+    """
+    import urllib.request
+    param = f"{code},day,{start or ''},{end or ''},{count},qfq"
+    last_err: Exception | None = None
+    for host in TENCENT_HOSTS:                      # 主域名失败自动切备用
+        url = f"https://{host}{TENCENT_PATH}?param={param}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": TENCENT_UA})
+            with deadline(TENCENT_TIMEOUT):
+                with urllib.request.urlopen(req) as resp:
+                    payload = json.loads(resp.read().decode("utf-8"))
+            if payload.get("code") != 0:
+                raise DataError(f"业务码异常：code={payload.get('code')} {payload.get('msg')}")
+            node = payload.get("data", {}).get(code, {})
+            rows = node.get("qfqday") or node.get("day") or []
+            name = (node.get("qt", {}).get(code) or ["", ""])[1] or ""
+            return rows, name
+        except (DataError, TimeoutError, OSError, ValueError) as e:
+            last_err = e
+            log(f"  腾讯源 {host} 失败：{e}")
+    raise DataError(f"腾讯日 K 拉取失败（{code}，已试 {len(TENCENT_HOSTS)} 个域名）：{last_err}")
+
+
+def _fetch_range_tencent(symbol: str) -> tuple[pd.DataFrame, str]:
+    """分页全量拉取腾讯前复权日 K（上市日至今），返回 (PARQUET_COLS 结构, 标的名称)。
+
+    分页：首页 end 不设界拉最近 800 根，之后以「当前最老日期前一天」为 end 逐页回翻，
+    某页根数 < 800 即到头（上市首日）。每次全量重拉、不做增量：qfq 前复权因子随新除权
+    整体平移历史价格，增量拼接会混用两套复权基准，全量重拉保证缓存内自洽
+    （35 只 ETF 量级约 1 分钟内完成）。
+    """
+    code = _tencent_code(symbol)
+    rows, name = _tencent_request(code, None, None)
+    all_rows = list(rows)
+    while len(rows) == TENCENT_MAX_COUNT:
+        oldest = all_rows[0][0]                     # 'YYYY-MM-DD'（首页最新，回翻后逐页变老）
+        end = (dt.date.fromisoformat(oldest) - dt.timedelta(days=1)).isoformat()
+        rows, name = _tencent_request(code, "1990-01-01", end)
+        if not rows or rows[-1][0] >= oldest:       # 无法再回翻（防御性终止）
+            break
+        all_rows = rows + all_rows
+    if not all_rows:
+        return pd.DataFrame(columns=PARQUET_COLS), name
+
+    df = pd.DataFrame([r[:6] for r in all_rows],
+                      columns=["date", "open", "close", "high", "low", "volume"])
+    df = df.drop_duplicates(subset="date").sort_values("date").reset_index(drop=True)
+    out = pd.DataFrame({
+        "time": pd.to_datetime(df["date"]).dt.tz_localize(tz_of(symbol)),  # 铁律：A 股 Asia/Shanghai
+        "open": df["open"].astype(float),
+        "high": df["high"].astype(float),
+        "low": df["low"].astype(float),
+        "close": df["close"].astype(float),
+        "volume": df["volume"].astype(float).astype("int64"),
+        "turnover": 0.0,                            # 接口无成交额，占位 0（引擎不用该列）
+    })
+    return out, name
+
+
+def fetch_symbol_tencent(symbol: str) -> int:
+    """腾讯源拉 A 股日 K 全量，覆盖落 parquet（无增量语义，原因见 _fetch_range_tencent）。返回根数。"""
+    symbol = symbol_normalize(symbol)
+    path = cache_path(symbol, "DAY")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df, name = _fetch_range_tencent(symbol)
+    if df.empty:
+        log(f"  DAY: 无数据（{symbol} 可能不是有效 A 股标的）")
+        return 0
+    df.to_parquet(path, index=False)
+    label = f"（{name}）" if name else ""
+    log(f"  DAY: {len(df):,} 根{label} → {path.relative_to(PROJECT_ROOT)}")
+    return len(df)
+
+
 # ---------------------------------------------------------------- 读缓存（供回测 / 策略共用）
 
 def load_cache(symbol: str, ktype: str) -> pd.DataFrame:
@@ -506,9 +609,23 @@ def _fetch_pool(ktypes: list[str] | None = None, force: bool = False) -> None:
 
 
 def cmd_fetch(args) -> None:
+    symbol = symbol_normalize(args.symbol)
+    ktypes = args.ktypes or list(KTYPES)
+    if market_of(symbol) in ("SH", "SZ"):
+        # A 股：日 K 走腾讯财经（免 OpenD、前复权、回溯到上市日）；分钟 K 仍走富途（需 OpenD）
+        if "DAY" in ktypes:
+            fetch_symbol_tencent(symbol)
+        rest = [k for k in ktypes if k != "DAY"]
+        if rest:
+            ctx = _futu_open()
+            try:
+                fetch_symbol(ctx, symbol, ktypes=rest)
+            finally:
+                ctx.close()
+        return
     ctx = _futu_open()
     try:
-        fetch_symbol(ctx, args.symbol, args.ktypes)
+        fetch_symbol(ctx, symbol, ktypes)
     finally:
         ctx.close()
 
@@ -526,7 +643,7 @@ def main() -> None:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("fetch", help="拉单标的全量（含增量）")
-    p.add_argument("symbol", help="符号，富途前缀格式 HK.02800（兼容 02800.HK）")
+    p.add_argument("symbol", help="符号，前缀格式 HK.02800 / US.SPY / SH.513100（A 股日 K 走腾讯财经，免 OpenD）")
     p.add_argument("--ktypes", nargs="+", default=None, help="周期列表，默认全部（1m/5m/15m/DAY）")
     p.set_defaults(fn=cmd_fetch)
 

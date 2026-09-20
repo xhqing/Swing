@@ -4,7 +4,7 @@
 
 ---
 
-## 一、本项目已接入的三个免费源（实测）
+## 一、本项目已接入的四个免费源（实测）
 
 ### 1. 长桥 CLI（`bash /tmp/lb.sh`）
 
@@ -42,6 +42,14 @@
 - 港股实时 Lv2 depth 实测可用（2026-07-10 盘中实证），但**历史 K 线深度未测通**
 - 美股无行情权限
 - **定位**：港股实时 WebSocket 辅助；历史回测暂不可用
+
+### 4. 腾讯财经日 K（2026-09-19 接入，A 股 SH/SZ 专用）
+
+- 接口：`GET https://proxy.finance.qq.com/ifzqgtimg/appstock/app/fqkline/get?param=<code>,day,<start>,<end>,<count>,qfq`（code = `sh513100` 小写市场前缀 + 6 位代码）
+- 备用域名 `web.ifzq.gtimg.cn`（2026-09-19 实测返回 `code=11 "No dispatch info found"` 失效，代码里保留自动切换待其恢复）
+- 免费、无 key、HTTPS；日 K 前复权（qfq），历史回溯到上市日（513100 可到 2013-05-15 上市首日）
+- **已接入 `engine/data.py`**：`fetch SH.513100` 自动路由（A 股 DAY → 腾讯，免 OpenD；A 股分钟 K 仍走富途）
+- 交叉验证：与新浪日 K（不复权）60 天 × 4 价格字段 0 不一致；与富途分钟 K 同日共存互不干扰
 
 ---
 
@@ -90,6 +98,10 @@
 3. **富途 OpenD 离线**：`open ~/FutuOpenD/FutuOpenD.app` 启动；未登录则 11111 不监听（ECONNREFUSED）。
 4. **macOS 无 `timeout` 命令**：富途/老虎调用用 `signal.SIGALRM` 做硬超时防挂起。
 5. 富途接口名是 `request_history_kline`（不是 `get_history_kline`）。
+6. **腾讯日 K 行顺序是 [日期, 开, 收, 高, 低, 量]**（第 2/3 列是收/高，非 OHLC 顺序），解析须对号入座；复权 key 为 `qfqday`、不复权为 `day`。
+7. **腾讯单次根数上限非线性**：`count<=800` 按请求精确返回，`count>800` 被钳到 640——安全值取 800，分页靠指定 start/end 日期区间回翻。
+8. **腾讯 volume 单位是「手」**（新浪/富途是「股」，差 100 倍）；本仓库 volume 只用于同标的内相对值（量比 / VWAP 加权），绝对单位不影响计算，保留原始值。
+9. **qfq 前复权无增量语义**：前复权因子随新除权整体平移历史价格，增量拼接会混用两套复权基准，故腾讯源每次全量重拉覆盖（qfqday 不复权日无此问题，但为口径统一同样全量）。
 
 ---
 
