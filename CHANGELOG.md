@@ -2,6 +2,11 @@
 
 ## [0.1.0] - 2026-09-19
 
+### 变更（智能体专属文件清理：CLAUDE.md / .claude / .pi 删除）
+
+- **为什么改**（2026-10-12）：全局新规「智能体专属文件只属于 Agent 项目」（`~/.claude/docs/agents-registry.md`「智能体专属文件归属与子项目映射（2026-10-12 修订）」，取代原「子项目 `.claude/` 超集」规则）：`CLAUDE.md`、`AGENTS.md`、`.claude/`、项目级 `.pi/` 等「会话启动时按工作目录加载、表征智能体身份」的项目级文件只有 Agent 项目允许拥有，非 Agent 项目（含本子项目）一律不得存在；后台会话只能以 Agent 项目根目录为工作目录。
+- **改了什么**（2026-10-12）：删除 `CLAUDE.md`、`.claude/`（quant skill 副本，无运行时数据）、`.pi/`（软链接，原指向 `.claude/skills`）；`.gitignore` 移除 `.claude/*` 运行时规则。全仓库 grep 核查：除被删文件自身外无任何脚本 / 文档 / 配置引用（README 双语、engine/、trend/、rotation/ 均不受影响）；quant skill 权威源仍在主仓库 QuantStrategistAgent 的 `.claude/skills/quant/`。
+
 ### 变更（主策略目录改名：swing/ → trend/，目录名即策略名）
 
 - 为什么改：用户裁定「主策略目录名要改，目录名即策略名」——项目从单一策略发展为双策略（趋势跟随 + 轮动），原目录名 swing/ 是建仓时「目录名 = 项目名」的历史遗留，与 rotation/ 并列时语义不对仗；改名 trend/（趋势）与 rotation/（轮动）对仗，目录名即策略名。
