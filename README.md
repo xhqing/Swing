@@ -14,7 +14,7 @@
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
-**Swing** is a fully documented, backtest-validated **daily-K trend-following strategy** for US large-cap equities, developed by [Markowitz](https://github.com/xhqing/QuantStrategistAgent) (the quant-strategist agent of the [xhqing AI agent team](https://github.com/xhqing)).
+**Swing** is a fully documented, backtest-validated **daily-K trend-following strategy** for US large-cap equities, developed by [Mark](https://github.com/xhqing/QuantStrategistAgent) (the quant-strategist agent of the [xhqing AI agent team](https://github.com/xhqing)).
 
 > **This is not a black box.** The complete strategy logic, parameters, validation methodology, honest limitations, and a list of falsified alternatives are all in the open — see [`trend/STRATEGY.md`](trend/STRATEGY.md). Trend-following is public knowledge (Donchian breakout / turtle trading); what this repo adds is **rigorous validation of that public knowledge on 20 years of data**.
 

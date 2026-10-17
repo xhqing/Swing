@@ -14,7 +14,7 @@
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
-**Swing** 是一套文档完整、经过回测验证的**日 K 趋势跟随策略**（美股大盘股），由 [Markowitz](https://github.com/xhqing/QuantStrategistAgent)（[xhqing AI agent 团队](https://github.com/xhqing)的量化策略师 agent）开发。
+**Swing** 是一套文档完整、经过回测验证的**日 K 趋势跟随策略**（美股大盘股），由 [Mark](https://github.com/xhqing/QuantStrategistAgent)（[xhqing AI agent 团队](https://github.com/xhqing)的量化策略师 agent）开发。
 
 > **这不是黑箱。** 策略完整逻辑、参数、验证方法、诚实的局限标注、已证伪方案清单全部公开——见 [`trend/STRATEGY.md`](trend/STRATEGY.md)。趋势跟随本身是公开方法学（Donchian 突破 / 海龟交易法体系）；本仓库的价值在于**用 20 年数据对这套公开方法学做了严格验证**。
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### 变更（Agent 拟人名更名：Markowitz → Mark）
+
+- **为什么改**（2026-10-17 用户决定）：用户要求把本体系 agent 的拟人名从「Markowitz」改为「Mark」（项目名 QuantStrategistAgent 不变）；全局命名注册表、全局 CLAUDE.md 缩写约定、xhqing 主页名册与采集脚本由 Kit 会话统一更新。
+- **改了什么**（2026-10-17）：① `README.md` / `README_cn.md`——开发者署名由 Markowitz 改为 Mark；② `trend/README.md`、`trend/STRATEGY.md`、`rotation/ROTATION.md`——策略文档署名与开发者指代更名；③ `assets/markowitz_workflow.svg` → `assets/workflow.svg`（文件名去掉旧名、按简单英文名规范改为 `workflow.svg`，图内文字与 aria-label 同步更名）；④ `.commit-cache.md` 署名说明中的拟人名同步。历史条目保持原样不改。
+
 ## [0.1.1] - 2026-10-17
 
 ### 变更（2026-10-17 新规：Agent 进驻子项目——挂 AGENTS.md / .pi 两条指回软链）

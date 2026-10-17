@@ -1,6 +1,6 @@
 # ETF 动量轮动策略（供单独使用 · 候选级）
 
-> **这是给你单独使用的量化策略完整文档**（Markowitz 开发，非 skill 规范，不含 AI 协作相关）。
+> **这是给你单独使用的量化策略完整文档**（Mark 开发，非 skill 规范，不含 AI 协作相关）。
 >
 > **免责声明**：本文档全部内容不构成投资建议；回测结果不代表实盘与未来表现；据此交易的风险由使用者自行承担。
 >
@@ -204,4 +204,4 @@ python3 rotation.py grid                              # 参数网格 96 组 → 
 - **2026-09-19 T9**（TODO 归档）：深化检验。b) 月度锚定证伪（22 日过拟合成分实锤，动态锚定 15.2%）；c) 缓冲带 buffer=2 采纳（19.8%）；d) 丰富度规则定位风控可选。
 - **待办**：T10 原版池复核（等清单）；样本外跟踪（§7.3）。
 
-*策略逻辑与回测由 Markowitz（QuantStrategistAgent）开发。数据源：腾讯财经日 K（qfq 前复权）。回测器与信号 CLI：`rotation/rotation.py`（共享数据层复用 `engine/data.py`）。*
+*策略逻辑与回测由 Mark（QuantStrategistAgent）开发。数据源：腾讯财经日 K（qfq 前复权）。回测器与信号 CLI：`rotation/rotation.py`（共享数据层复用 `engine/data.py`）。*
