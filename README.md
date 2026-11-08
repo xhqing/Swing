@@ -90,5 +90,5 @@ This repository is for research and educational purposes. **Nothing here is inve
 
 This project is licensed under the [MIT License](LICENSE.md).
 
-- Copyright (c) 2026 All Contributors
+- Copyright (c) 2026 xhqing <https://github.com/xhqing>
 - If you use or reference this repository, please retain the copyright notice and credit the source: [https://github.com/xhqing/Swing](https://github.com/xhqing/Swing)

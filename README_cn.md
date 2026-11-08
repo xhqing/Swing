@@ -90,5 +90,5 @@ cd ../rotation && python3 rotation.py fetch-pool && python3 rotation.py signals
 
 本项目基于 [MIT 许可证](LICENSE.md) 开源。
 
-- 版权所有 (c) 2026 All Contributors
+- 版权所有 (c) 2026 xhqing
 - 引用 / 使用本仓库时请保留版权声明并注明来源：[https://github.com/xhqing/Swing](https://github.com/xhqing/Swing)
