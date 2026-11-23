@@ -6,14 +6,14 @@
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Version-0.1.1-0D9488.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-0.1.2-0D9488.svg" alt="Version" />
   <img src="https://img.shields.io/badge/Type-Quant%20Strategy-16C784.svg" alt="Type: Quant Strategy" />
   <img src="https://img.shields.io/badge/Endpoint-Backtest%20Validated-F59E0B.svg" alt="Endpoint: Backtest Validated" />
 </p>
 
 <p align="center">🌐 <a href="README_cn.md">简体中文</a></p>
 
-**Swing** is a fully documented, backtest-validated **daily-K trend-following strategy** for US large-cap equities, developed by [Mark](https://github.com/xhqing/QuantStrategistAgent) (the quant-strategist agent of the [xhqing AI agent team](https://github.com/xhqing)).
+**Swing** is a fully documented, backtest-validated **daily-K trend-following strategy** for US large-cap equities, developed by [Mark](https://github.com/xhqing/quant-agent) (the quant-strategist agent of the [xhqing AI agent team](https://github.com/xhqing)).
 
 > **This is not a black box.** The complete strategy logic, parameters, validation methodology, honest limitations, and a list of falsified alternatives are all in the open — see [`trend/STRATEGY.md`](trend/STRATEGY.md). Trend-following is public knowledge (Donchian breakout / turtle trading); what this repo adds is **rigorous validation of that public knowledge on 20 years of data**.
 

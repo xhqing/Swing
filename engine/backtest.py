@@ -248,7 +248,7 @@ class BacktestResult:
 
         凯利框架核心：固定风险比例 f 下注时，每笔权益乘 (1+f·net_R)，n 笔后权益 ≈ e^(n·g)。
         g 把净平均赔率 EV(=net_avg_R) 与净赔率方差 σ²(=var_R) 统一成单一实数：
-            g ≈ f·EV − (f²/2)(σ² + EV²)   （泰勒近似，见 DayTradingAgent/notes/cumulative-return-derivation.md）
+            g ≈ f·EV − (f²/2)(σ² + EV²)   （泰勒近似，见 trading-agent/notes/cumulative-return-derivation.md）
         ——第一项 f·EV 均值贡献（正向），第二项 −(f²/2)σ² 方差惩罚（负向）。
         g > 0 才有指数复利（比 EV > 0 严格得多：EV>0 但 f 过大或 σ² 过大都会让 g<0）。
         用净 R（扣成本）。f = 每笔风险占权益比例（默认 2%）。
