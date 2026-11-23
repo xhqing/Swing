@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2] - 2026-11-23
+
+### 变更（从 quant-agent 抽回为独立仓库）
+
+- **为什么改**：用户 2026-11-23 要求把 `Intraday` / `Swing` / `gridtrader` 从 quant-agent 抽回、各自恢复为独立仓库，作为 Mark 名下的子项目（2026-11-08 曾把三个仓库并入 quant-agent 成为三个目录）。
+- **改了什么**：① 内容同步为并入期间的最新版（项目更名 quant-agent、`xhqing and contributors` 署名口径、指向 `trading-agent` 的链接等）；② `AGENTS.md` 由指向 Agent 项目的软链接改为本仓库实体文件，写明子项目归属、Worker 边界与版本权威；③ 删除跨仓库路径已失效的 `.pi/settings.json`；④ `LICENSE.md` 版权行统一为 `Copyright (c) 2026 xhqing and contributors`；⑤ 补 `CONTRIBUTING.md` / `CONTRIBUTING_cn.md`；⑥ VERSION 0.1.1 → 0.1.2，双语 README 徽章同步。
+- **顺带修掉一处潜伏缺陷**：`engine/data.py` 的 `PROJECT_ROOT` 原本按「quant skill 在 `.claude/skills/quant/` 下」的老布局取三级父目录，实际指向仓库之外，导致 `tmp/` 落位与日志里的相对路径都不是仓库内路径；改为 `Q_DIR.parent`（仓库根），与 `DATA_CACHE = Q_DIR / "data_cache"` 一致。
+- **回归风险**：无策略逻辑与回测口径改动——`trend/` / `rotation/` 的脚本、参数与 `engine/confidence_table.json` 一字未改；`PROJECT_ROOT` 只影响临时产物目录与日志文案，不参与任何指标计算。
+
 ### 新增（CI 门禁：validate 检查 + main 分支 strict 保护）
 
 - **为什么改**：用户 2026-11-03 立规「新建仓库一律必须 strict 模式的 PR CI」，并要求 28 个不合规的存量仓库统一执行最新标准。本项目此前在 PR 上没有门禁——改动合进 main 全靠人工把关，PR 可以拿旧 main 上通过的检查直接合并，回归防护存在缺口。本次补齐团队要求的「三件套」：PR 上真实跑的 CI 检查 + 挂成 required status check + `required_status_checks.strict = true`。

@@ -204,4 +204,4 @@ python3 rotation.py grid                              # 参数网格 96 组 → 
 - **2026-09-19 T9**（TODO 归档）：深化检验。b) 月度锚定证伪（22 日过拟合成分实锤，动态锚定 15.2%）；c) 缓冲带 buffer=2 采纳（19.8%）；d) 丰富度规则定位风控可选。
 - **待办**：T10 原版池复核（等清单）；样本外跟踪（§7.3）。
 
-*策略逻辑与回测由 Mark（QuantStrategistAgent）开发。数据源：腾讯财经日 K（qfq 前复权）。回测器与信号 CLI：`rotation/rotation.py`（共享数据层复用 `engine/data.py`）。*
+*策略逻辑与回测由 Mark（quant-agent）开发。数据源：腾讯财经日 K（qfq 前复权）。回测器与信号 CLI：`rotation/rotation.py`（共享数据层复用 `engine/data.py`）。*

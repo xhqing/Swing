@@ -112,7 +112,7 @@ $$g = \mathbb{E}[\ln(1+fR)] \approx f\cdot EV - \tfrac{f^2}{2}(\sigma^2 + EV^2)$
 - 第二项 `−(f²/2)·σ²`：**方差惩罚**（负向）——`σ²` 越大、`f` 越大，`g` 被吃得越多。
 - 第三项 `−(f²/2)·EV²`：均值非线性修正（通常较小）。
 
-> 完整推导见 [DayTradingAgent/notes/cumulative-return-derivation.md](https://github.com/xhqing/DayTradingAgent/blob/main/notes/cumulative-return-derivation.md)。
+> 完整推导见 [trading-agent/notes/cumulative-return-derivation.md](https://github.com/xhqing/trading-agent/blob/main/notes/cumulative-return-derivation.md)。
 
 **为什么用 `g` 而非「`EV` + `σ²` 双目标」**：双目标无全序（帕累托权衡难以决策——`EV` 高 `σ²` 也高的策略 vs `EV` 低 `σ²` 低的策略，谁好？），`g` 是单一实数可直接比较排序。且 **`g>0` 才有指数复利**，比 `EV>0` 严格得多——`EV>0` 但 `f` 过大或 `σ²` 过大都会让 `g<0`（长期缩水）。错误公式 `(1+f·EV)ⁿ` 丢掉方差惩罚、系统性诱导过度下注，**禁止用于决策**。
 

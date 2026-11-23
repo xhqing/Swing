@@ -6,14 +6,14 @@
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Version-0.1.1-0D9488.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-0.1.2-0D9488.svg" alt="Version" />
   <img src="https://img.shields.io/badge/Type-Quant%20Strategy-16C784.svg" alt="Type: Quant Strategy" />
   <img src="https://img.shields.io/badge/Endpoint-Backtest%20Validated-F59E0B.svg" alt="Endpoint: Backtest Validated" />
 </p>
 
 <p align="center">🌐 <a href="README.md">English</a></p>
 
-**Swing** 是一套文档完整、经过回测验证的**日 K 趋势跟随策略**（美股大盘股），由 [Mark](https://github.com/xhqing/QuantStrategistAgent)（[xhqing AI agent 团队](https://github.com/xhqing)的量化策略师 agent）开发。
+**Swing** 是一套文档完整、经过回测验证的**日 K 趋势跟随策略**（美股大盘股），由 [Mark](https://github.com/xhqing/quant-agent)（[xhqing AI agent 团队](https://github.com/xhqing)的量化策略师 agent）开发。
 
 > **这不是黑箱。** 策略完整逻辑、参数、验证方法、诚实的局限标注、已证伪方案清单全部公开——见 [`trend/STRATEGY.md`](trend/STRATEGY.md)。趋势跟随本身是公开方法学（Donchian 突破 / 海龟交易法体系）；本仓库的价值在于**用 20 年数据对这套公开方法学做了严格验证**。
 
@@ -90,5 +90,5 @@ cd ../rotation && python3 rotation.py fetch-pool && python3 rotation.py signals
 
 本项目基于 [MIT 许可证](LICENSE.md) 开源。
 
-- 版权所有 (c) 2026 xhqing <https://github.com/xhqing>
+- 版权所有 (c) 2026 xhqing
 - 引用 / 使用本仓库时请保留版权声明并注明来源：[https://github.com/xhqing/Swing](https://github.com/xhqing/Swing)
